@@ -72,4 +72,7 @@ ext {
     koin_android_version= "3.3.0"
     koin_android_compose_version= "3.3.0"
     koin_ktor= "3.2.2"
+    androidxAnnotationVersion = "1.5.0"
+    robolectricVersion = "4.9"
+    guavaVersion = "31.1-android"
 }

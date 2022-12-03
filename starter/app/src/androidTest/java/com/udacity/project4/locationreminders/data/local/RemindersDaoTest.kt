@@ -78,7 +78,7 @@ class RemindersDaoTest : AutoCloseKoinTest() {
 
         remindersLocalRepository = RemindersLocalRepository(
             remindersDao = remindersDatabase.reminderDao(),
-            Dispatchers.Main
+            Dispatchers.IO
         )
         localedao = LocalDB.createRemindersDao(ApplicationProvider.getApplicationContext())
 
@@ -90,7 +90,19 @@ class RemindersDaoTest : AutoCloseKoinTest() {
             dao1.saveReminder(data1)
         }*/
     }
-
+/*
+    }
+   @Before
+    fun createDb() {
+        stopKoin()
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+//        val context = ApplicationProvider.getApplicationContext<Context>()
+        database = Room.inMemoryDatabaseBuilder(
+            context, RemindersDatabase::class.java
+        ).setTransactionExecutor(Executors.newSingleThreadExecutor()).build()
+        dao = database.reminderDao()
+    }
+* */
     @Test
     fun testDataBase_getDataById() = runTest {
         //Given

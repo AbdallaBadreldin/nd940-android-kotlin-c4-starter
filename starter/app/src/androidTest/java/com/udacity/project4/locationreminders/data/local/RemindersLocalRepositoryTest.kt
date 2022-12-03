@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import androidx.test.platform.app.InstrumentationRegistry
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
 import kotlinx.coroutines.Dispatchers
@@ -36,16 +37,7 @@ class RemindersLocalRepositoryTest : AutoCloseKoinTest() {
 //    @get:Rule
 //    var instantExecutorRule = InstantTaskExecutorRule()
 
-    @Before
-    fun createDb() {
-        stopKoin()
 
-        val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(
-            context, RemindersDatabase::class.java
-        ).setTransactionExecutor(Executors.newSingleThreadExecutor()).build()
-        dao = database.reminderDao()
-    }
 
     @After
     @Throws(IOException::class)
