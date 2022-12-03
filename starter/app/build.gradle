@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ManagedVirtualDevice
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
@@ -23,7 +25,6 @@ android {
 //        buildConfigField "string", "MAPS_API_KEY", MAPS_API_KEY
         buildConfigField "String", "MAPS_API_KEY", "\"MAPS_API_KEY\""
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -40,34 +41,36 @@ android {
     lintOptions {
         abortOnError false
     }
-    testOptions {
-        unitTests {
-            includeAndroidResources = true
-        }
-        managedDevices {
-            devices {
-
-                // run with ../gradlew  nexusOneApi30DebugAndroidTest
-                nexusOneApi30(com.android.build.api.dsl.ManagedVirtualDevice) {
-                    // A lower resolution device is used here for better emulator performance
-                    device = "Nexus One"
-                    apiLevel = 30
-                    // Also use the AOSP ATD image for better emulator performance
-                    systemImageSource = "aosp-atd"
-                }
-            }
-        }
+    productFlavors {
     }
+//    testOptions {
+//        unitTests {
+//            includeAndroidResources = true
+//        }
+//        managedDevices {
+//            devices {
+//
+//                // run with ../gradlew  nexusOneApi30DebugAndroidTest
+//                nexusOneApi30(ManagedVirtualDevice) {
+//                    // A lower resolution device is used here for better emulator performance
+//                    device = "Nexus One"
+//                    apiLevel = 30
+//                    // Also use the AOSP ATD image for better emulator performance
+//                    systemImageSource = "aosp-atd"
+//                }
+//            }
+//        }
+//    }
+
+    //dataBinding {
+    //    enabled = true
+    //    enabledForTests = true
+    //}
     buildFeatures {
         dataBinding true
     }
-
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
 }
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     // App dependencies
@@ -75,15 +78,11 @@ dependencies {
     implementation "androidx.legacy:legacy-support-v4:$androidXLegacySupport"
     implementation "androidx.annotation:annotation:$androidXAnnotations"
 
-    // App dependencies
-    implementation 'androidx.annotation:annotation:' + rootProject.androidxAnnotationVersion
-    implementation 'com.google.guava:guava:' + rootProject.guavaVersion
-
     implementation "androidx.cardview:cardview:$cardVersion"
     implementation "com.google.android.material:material:$materialVersion"
     implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
     implementation "androidx.constraintlayout:constraintlayout:2.2.0-alpha04"
-    androidTestImplementation "androidx.test:runner:$androidXTestExtKotlinRunnerVersion"
+    androidTestImplementation 'androidx.test:runner:1.5.0'
     implementation 'com.google.code.gson:gson:2.10'
 
     // Architecture Components
@@ -162,7 +161,7 @@ dependencies {
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
     debugImplementation "androidx.fragment:fragment-testing:$fragmentVersion"
-//    implementation "androidx.test:core:$androidXTestCoreVersion"  duplicated
+    implementation "androidx.test:core:$androidXTestCoreVersion"
     implementation "androidx.fragment:fragment:$fragmentVersion"
     androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
     androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
@@ -179,7 +178,7 @@ dependencies {
     // FirebaseUI for Firebase Auth
     implementation 'com.firebaseui:firebase-ui-auth:8.0.2'
 
-//    implementation androidx.test.espresso:espresso-idling-resource
+
 //    implementation 'org.jetbrains:annotations-java5:21.0.1'
 
 }
