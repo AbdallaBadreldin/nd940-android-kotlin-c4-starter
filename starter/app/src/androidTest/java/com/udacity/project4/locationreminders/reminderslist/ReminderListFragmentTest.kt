@@ -1,372 +1,100 @@
 package com.udacity.project4.locationreminders.reminderslist
 
-import android.app.Activity
-import android.content.Context
-import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
+import android.app.Application
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.RootMatchers
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.ext.junit.rules.ActivityScenarioRule
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.espresso.IdlingRegistry
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.rule.GrantPermissionRule
-import com.udacity.project4.R
-import com.udacity.project4.authentication.AuthenticationActivity
+import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.data.local.LocalDB
+import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
+import com.udacity.project4.util.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.hamcrest.Description
-import org.hamcrest.Matcher
-import org.hamcrest.Matchers
-import org.hamcrest.TypeSafeMatcher
+import kotlinx.coroutines.runBlocking
+import org.junit.After
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.koin.test.AutoCloseKoinTest
-import org.mockito.Mockito.mock
-import org.mockito.Mockito.verify
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.context.startKoin
+import org.koin.core.context.stopKoin
+import org.koin.dsl.module
+import org.koin.java.KoinJavaComponent.get
+import org.koin.java.KoinJavaComponent.inject
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
 //UI Testing
 @MediumTest
-class ReminderListFragmentTest: AutoCloseKoinTest() {
+class ReminderListFragmentTest {
 
-    @Rule
-    @JvmField
-    var mActivityScenarioRule = ActivityScenarioRule(AuthenticationActivity::class.java)
+    private lateinit var reminderDataSource: ReminderDataSource
+    private lateinit var context: Application
 
-    @Rule
-    @JvmField
-    var mGrantPermissionRule =
-        GrantPermissionRule.grant(
-            "android.permission.ACCESS_FINE_LOCATION",
-            "android.permission.ACCESS_COARSE_LOCATION",
-            "android.permission.ACCESS_BACKGROUND_LOCATION"
-        )
+    private val dataBindingIdlingResource = DataBindingIdlingResource()
 
-    @Test
-    fun remindersTest() {
-        val floatingActionButton = onView(
-            Matchers.allOf(
-                withId(R.id.addReminderFAB),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.refreshLayout),
-                        0
-                    ),
-                    3
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        floatingActionButton.perform(click())
+    @get:Rule
+    val instantExecutorRule = InstantTaskExecutorRule()
 
-        val appCompatEditText = onView(
-            Matchers.allOf(
-                withId(R.id.reminderTitle),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    0
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatEditText.perform(
-            ViewActions.replaceText("any hbl title"),
-            ViewActions.closeSoftKeyboard()
-        )
+    @Before
+    fun setupApp() {
+        stopKoin()
+        context = ApplicationProvider.getApplicationContext()
 
-        val appCompatEditText2 = onView(
-            Matchers.allOf(
-                withId(R.id.reminderTitle), ViewMatchers.withText("any hbl title"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    0
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatEditText2.perform(click())
-
-        val appCompatEditText3 = onView(
-            Matchers.allOf(
-                withId(R.id.reminderDescription),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatEditText3.perform(
-            ViewActions.replaceText("any hb? description"),
-            ViewActions.closeSoftKeyboard()
-        )
-
-        val appCompatTextView = onView(
-            Matchers.allOf(
-                withId(R.id.selectLocation), ViewMatchers.withText("Reminder Location"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    2
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatTextView.perform(click())
-
-        val appCompatButton = onView(
-            Matchers.allOf(
-                withId(R.id.map_button), ViewMatchers.withText("Confirm"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatButton.perform(click())
-
-        val appCompatTextView2 = onView(
-            Matchers.allOf(
-                withId(R.id.selectLocation), ViewMatchers.withText("Reminder Location"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    2
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatTextView2.perform(click())
-
-        val view = onView(
-            Matchers.allOf(
-                ViewMatchers.withContentDescription("Google Map"),
-                ViewMatchers.withParent(ViewMatchers.withParent(withId(R.id.map))),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        view.check(ViewAssertions.matches(ViewMatchers.isDisplayed()))
-
-        val appCompatButton2 = onView(
-            Matchers.allOf(
-                withId(R.id.map_button), ViewMatchers.withText("Confirm"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatButton2.perform(click())
-
-        val floatingActionButton2 = onView(
-            Matchers.allOf(
-                withId(R.id.saveReminder),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    4
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        floatingActionButton2.perform(click())
-
-        val floatingActionButton3 = onView(
-            Matchers.allOf(
-                withId(R.id.saveReminder),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    4
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        floatingActionButton3.perform(click())
-
-        val textView = onView(
-            Matchers.allOf(
-                withId(R.id.title), ViewMatchers.withText("any hbl title"),
-                ViewMatchers.withParent(ViewMatchers.withParent(withId(R.id.reminderCardView))),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        textView.check(ViewAssertions.matches(ViewMatchers.withText("any hbl title")))
-    }
-
-    private fun getCurrentActivity(): Activity? {
-        val activity = arrayOfNulls<Activity>(1)
-        onView(ViewMatchers.isRoot()).check { view, noViewFoundException ->
-            activity[0] = view.context as Activity
-        }
-        return activity[0]
-    }
-    @Test
-    fun checkOnAddingRemindersValidation() {
-        val floatingActionButton = onView(
-            Matchers.allOf(
-                withId(R.id.addReminderFAB),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.refreshLayout),
-                        0
-                    ),
-                    3
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        floatingActionButton.perform(click())
-
-        val appCompatEditText = onView(
-            Matchers.allOf(
-                withId(R.id.reminderDescription),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatEditText.perform(
-            ViewActions.replaceText("lets edit description and for "),
-            ViewActions.closeSoftKeyboard()
-        )
-
-        Espresso.pressBack()
-
-        val appCompatEditText2 = onView(
-            Matchers.allOf(
-                withId(R.id.reminderDescription),
-                ViewMatchers.withText("lets edit description and for "),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatEditText2.perform(ViewActions.replaceText("lets edit description and forget titl "))
-
-        val appCompatEditText3 = onView(
-            Matchers.allOf(
-                withId(R.id.reminderDescription),
-                ViewMatchers.withText("lets edit description and forget titl "),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        appCompatEditText3.perform(ViewActions.closeSoftKeyboard())
-
-        val floatingActionButton2 = onView(
-            Matchers.allOf(
-                withId(R.id.saveReminder),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    4
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        floatingActionButton2.perform(click())
-
-        val floatingActionButton3 = onView(
-            Matchers.allOf(
-                withId(R.id.saveReminder),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    4
-                ),
-                ViewMatchers.isDisplayed()
-            )
-        )
-        floatingActionButton3.perform(click())
-        onView(ViewMatchers.withText(R.string.add_title)).inRoot(
-            RootMatchers.withDecorView(
-                Matchers.not(
-                    Matchers.`is`(
-                        getCurrentActivity()?.window?.decorView
-                    )
+        val myModule = module {
+            viewModel {
+                RemindersListViewModel(
+                    context,
+                    get() as ReminderDataSource
                 )
-            )
-        ).check(
-            ViewAssertions.matches(
-                ViewMatchers.isDisplayed()
-            )
-        )
+            }
+            single { RemindersLocalRepository(get()) }
+            single { LocalDB.createRemindersDao(context) }
+        }
+
+        // Declare a new koin module.
+        startKoin {
+            modules(listOf(myModule))
+        }
+
+
+        // Get our real repository.
+        reminderDataSource = get()
+
+        // Clear the data to start fresh.
+        runBlocking {
+            reminderDataSource.deleteAllReminders()
+        }
+
+        IdlingRegistry.getInstance().apply {
+            register(EspressoIdlingResource.countingIdlingResource)
+            register(dataBindingIdlingResource)
+        }
     }
 
-    private fun childAtPosition(
-        parentMatcher: Matcher<View>, position: Int
-    ): Matcher<View> {
+    @Test
+    fun firstTest() {
 
-        return object : TypeSafeMatcher<View>() {
-            override fun describeTo(description: Description) {
-                description.appendText("Child at position $position in parent ")
-                parentMatcher.describeTo(description)
-            }
 
-            public override fun matchesSafely(view: View): Boolean {
-                val parent = view.parent
-                return parent is ViewGroup && parentMatcher.matches(parent)
-                        && view == parent.getChildAt(position)
-            }
+        val scenario = launchFragmentInContainer<ReminderListFragment>()
+        dataBindingIdlingResource.monitorFragment(scenario)
+
+        //pleaaaaaaaaaaaaaaaaase work
+
+    }
+
+
+    @After
+    fun unregisterIdlingResources() {
+        stopKoin()
+        IdlingRegistry.getInstance().apply {
+            unregister(EspressoIdlingResource.countingIdlingResource)
+            unregister(dataBindingIdlingResource)
         }
     }
 }
