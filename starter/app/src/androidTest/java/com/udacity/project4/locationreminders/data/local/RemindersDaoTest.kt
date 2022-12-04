@@ -2,17 +2,22 @@ package com.udacity.project4.locationreminders.data.local
 
 import android.app.Application
 import android.content.Context
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.GlobalContext.get
+import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
@@ -34,19 +39,29 @@ class RemindersDaoTest : AutoCloseKoinTest() {
     lateinit var appContext: Application
     lateinit var localedao: RemindersDao
 
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun initDataBase() {
         stopKoin()
         val context = ApplicationProvider.getApplicationContext<Context>()
 
-        val weatherAppModule = module { // Room Database instance
+        val appModule = module { // Room Database instance
             single {
-                Room.inMemoryDatabaseBuilder(
+                remindersDatabase = Room.inMemoryDatabaseBuilder(
                     context, RemindersDatabase::class.java
                 ).setTransactionExecutor(Executors.newSingleThreadExecutor()).build()
             }
         }
+
+        startKoin {
+            androidLogger()
+            androidContext(context)
+            modules(listOf(appModule))
+        }
+
+        remindersDatabase = get() as RemindersDatabase
     }
 
     @After
@@ -55,7 +70,7 @@ class RemindersDaoTest : AutoCloseKoinTest() {
     }
 
     @Test
-    fun testDataBase_getDataById() = runTest {
+    fun testDataBase_getDataById() {
         //Given
         //UpThere
         data1 = ReminderDTO("title", "description", "Location", 10.5, 5.5)

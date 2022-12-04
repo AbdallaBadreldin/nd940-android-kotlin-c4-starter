@@ -1,31 +1,44 @@
 package com.udacity.project4.locationreminders.reminderslist
 
+
 import android.app.Application
+import android.os.Bundle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import androidx.test.core.app.ApplicationProvider
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
+import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
-import androidx.test.espresso.matcher.ViewMatchers.*
+import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
+import com.udacity.project4.R
 import com.udacity.project4.locationreminders.data.ReminderDataSource
+import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
-import com.udacity.project4.util.*
+import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
+import com.udacity.project4.util.DataBindingIdlingResource
+import com.udacity.project4.util.EspressoIdlingResource
+import com.udacity.project4.util.monitorFragment
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
-import org.koin.java.KoinJavaComponent.get
-import org.koin.java.KoinJavaComponent.inject
+import org.koin.test.get
+
 
 @RunWith(AndroidJUnit4::class)
 @ExperimentalCoroutinesApi
@@ -59,17 +72,18 @@ class ReminderListFragmentTest {
 
         // Declare a new koin module.
         startKoin {
+            androidLogger()
             modules(listOf(myModule))
         }
 
 
-        // Get our real repository.
-        reminderDataSource = get()
+      /*  // Get our real repository.
+        reminderDataSource = get() as ReminderDataSource
 
         // Clear the data to start fresh.
         runBlocking {
             reminderDataSource.deleteAllReminders()
-        }
+        }*/
 
         IdlingRegistry.getInstance().apply {
             register(EspressoIdlingResource.countingIdlingResource)
@@ -81,8 +95,8 @@ class ReminderListFragmentTest {
     fun firstTest() {
 
 
-        val scenario = launchFragmentInContainer<ReminderListFragment>()
-        dataBindingIdlingResource.monitorFragment(scenario)
+        val fragmentScenario = launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
+        dataBindingIdlingResource.monitorFragment(fragmentScenario)
 
         //pleaaaaaaaaaaaaaaaaase work
 

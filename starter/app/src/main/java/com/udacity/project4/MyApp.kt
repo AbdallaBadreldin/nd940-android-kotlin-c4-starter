@@ -7,6 +7,7 @@ import com.udacity.project4.locationreminders.data.local.RemindersLocalRepositor
 import com.udacity.project4.locationreminders.reminderslist.RemindersListViewModel
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -19,7 +20,7 @@ class MyApp : Application() {
         /**
          * use Koin Library as a service locator
          */
-        val myModule = module {
+        val myModule = module (override = true){
             //Declare a ViewModel - be later inject into Fragment with dedicated injector using by viewModel()
             viewModel {
                 RemindersListViewModel(
@@ -40,6 +41,7 @@ class MyApp : Application() {
         }
 
         startKoin {
+            androidLogger()
             androidContext(this@MyApp)
             modules(listOf(myModule))
         }
