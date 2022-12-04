@@ -61,7 +61,10 @@ class RemindersDaoTest : AutoCloseKoinTest() {
             modules(listOf(appModule))
         }
 
-        remindersDatabase = get() as RemindersDatabase
+        remindersDatabase = get() as RemindersDatabase // is wrong ?
+//        can I just stop using koin ?
+//    but if I am using koin or not THE UI TESTING complain I don't know what to do'
+
     }
 
     @After
