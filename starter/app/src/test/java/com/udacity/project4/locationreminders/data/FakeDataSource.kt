@@ -13,10 +13,14 @@ class FakeDataSource(
     ReminderDataSource {
 
     override suspend fun getReminders(): Result<List<ReminderDTO>> = withContext(Dispatchers.IO) {
-        if (!isReturnErrors)
-            return@withContext Result.Success<List<ReminderDTO>>(list)
-        else {
-            return@withContext Result.Error("Error")
+        try {
+            if (!isReturnErrors)
+                return@withContext Result.Success<List<ReminderDTO>>(list)
+            else {
+                return@withContext Result.Error("Error")
+            }
+        } catch (e: Exception) {
+            return@withContext Result.Error(e.localizedMessage)
         }
     }
 

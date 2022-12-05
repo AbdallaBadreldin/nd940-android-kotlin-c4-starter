@@ -9,8 +9,6 @@ import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.firebase.ui.auth.data.model.FirebaseAuthUIAuthenticationResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.udacity.project4.R
 import com.udacity.project4.locationreminders.RemindersActivity
 
@@ -32,7 +30,7 @@ class AuthenticationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_authentication)
-        auth = Firebase.auth
+        auth = FirebaseAuth.getInstance()
         // Check if user is signed in (non-null) and update UI accordingly.
         val currentUser: FirebaseUser? = auth.currentUser
         if (currentUser != null) {

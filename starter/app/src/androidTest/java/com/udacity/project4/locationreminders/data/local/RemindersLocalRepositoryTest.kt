@@ -1,6 +1,7 @@
 package com.udacity.project4.locationreminders.data.local
 
 import android.content.Context
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.matcher.ViewMatchers
@@ -16,10 +17,10 @@ import kotlinx.coroutines.withContext
 import org.hamcrest.CoreMatchers
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.core.context.stopKoin
-import org.koin.test.AutoCloseKoinTest
 import java.io.IOException
 import java.util.concurrent.Executors
 
@@ -27,62 +28,52 @@ import java.util.concurrent.Executors
 @RunWith(AndroidJUnit4::class)
 //Medium Test to test the repository
 @MediumTest
-class RemindersLocalRepositoryTest : AutoCloseKoinTest() {
+class RemindersLocalRepositoryTest {
     //  (DONE)  TODO: Add testing implementation to the RemindersLocalRepository.kt
     private lateinit var repository: RemindersLocalRepository
     private lateinit var database: RemindersDatabase
     private lateinit var dao: RemindersDao
 
-//    @get:Rule
-//    var instantExecutorRule = InstantTaskExecutorRule()
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun createDb() {
-        stopKoin()
+         val context = ApplicationProvider.getApplicationContext<Context>()
+         database = Room.inMemoryDatabaseBuilder(
+             context, RemindersDatabase::class.java
+         ).setTransactionExecutor(Executors.newSingleThreadExecutor()).build()
+         dao = database.reminderDao()
 
-       /* val context = ApplicationProvider.getApplicationContext<Context>()
-        database = Room.inMemoryDatabaseBuilder(
-            context, RemindersDatabase::class.java
-        ).setTransactionExecutor(Executors.newSingleThreadExecutor()).build()
-        dao = database.reminderDao()*/
-
-
-
+        repository = RemindersLocalRepository(dao, ioDispatcher = Dispatchers.Main)
 //     It also stops working just tried every thing even wrong answers
     }
 
     @After
-    @Throws(IOException::class)
     fun closeDb() {
+        stopKoin()
         database.close()
     }
 
-//    @ExperimentalCoroutinesApi
-//    class CoroutineTestRule(val testDispatcher: TestCoroutineDispatcher = TestCoroutineDispatcher()) :
-//        TestWatcher() {
-//        override fun starting(description: Description?) {
-//            super.starting(description)
-//            Dispatchers.setMain(testDispatcher)
-//        }
-//
-//        override fun finished(description: Description?) {
-//            super.finished(description)
-//            Dispatchers.resetMain()
-//            testDispatcher.cleanupTestCoroutines()
-//        }
-//    }
-
-//    @get:Rule
-//    var coroutinesTestRule = CoroutineTestRule()
-
     @Test
-    suspend fun testRoom() {
-        return withContext(Dispatchers.Default) {
+     fun testRoom() {
+        runTest {
+            //given
             val newTask = ReminderDTO("title", "description", "22.8745, 88.6971", 22.8745, 88.6971)
             dao.saveReminder(newTask)
+            dao.saveReminder(newTask)
+            dao.saveReminder(newTask)
+
+            //when
             val byId = dao.getReminderById(newTask.id)
+
+            //then
             ViewMatchers.assertThat(byId?.id, CoreMatchers.`is`(newTask.id))
-            return@withContext
+            ViewMatchers.assertThat(byId?.title, CoreMatchers.`is`(newTask.title))
+            ViewMatchers.assertThat(byId?.location, CoreMatchers.`is`(newTask.location))
+            ViewMatchers.assertThat(byId?.description, CoreMatchers.`is`(newTask.description))
+            ViewMatchers.assertThat(byId?.latitude, CoreMatchers.`is`(newTask.latitude))
+            ViewMatchers.assertThat(byId?.longitude, CoreMatchers.`is`(newTask.longitude))
         }
     }
 
@@ -98,8 +89,12 @@ class RemindersLocalRepositoryTest : AutoCloseKoinTest() {
 
             //Then
             result as Result.Success
-            ViewMatchers.assertThat(result.data.title, CoreMatchers.`is`("title"))
-            ViewMatchers.assertThat(result.data.description, CoreMatchers.`is`("description"))
+            ViewMatchers.assertThat(result.data.title, CoreMatchers.`is`(newTask.title))
+            ViewMatchers.assertThat(result.data.id, CoreMatchers.`is`(newTask.id))
+            ViewMatchers.assertThat(result.data.description, CoreMatchers.`is`(newTask.description))
+            ViewMatchers.assertThat(result.data.location, CoreMatchers.`is`(newTask.location))
+            ViewMatchers.assertThat(result.data.latitude, CoreMatchers.`is`(newTask.latitude))
+            ViewMatchers.assertThat(result.data.longitude, CoreMatchers.`is`(newTask.longitude))
         }
     }
 
