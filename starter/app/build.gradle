@@ -112,9 +112,7 @@ dependencies {
     // Koin
     implementation "io.insert-koin:koin-android:$koin_version"
     implementation "io.insert-koin:koin-core:$koin_version"
-//    implementation "io.insert-koin:koin-androidx-viewmodel:2.0.1"
-
-
+//    implementation "io.insert-koin:koin-androidx-viewmodel:2.0.1
 
     // Dependencies for local unit tests
     testImplementation "junit:junit:$junitVersion"
@@ -159,5 +157,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:21.1.0'
     implementation "com.firebaseui:firebase-ui-auth:8.0.2"
 
-    androidTestImplementation "io.insert-koin:koin-test-junit4:3.0.1"
+    androidTestImplementation "io.insert-koin:koin-test-junit4:3.2.2"
 }

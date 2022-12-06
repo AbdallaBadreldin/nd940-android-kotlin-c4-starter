@@ -33,8 +33,6 @@ class RemindersListViewModelTest {
 
     @Before
     fun startKoinForTestAndInitRepository() {
-
-
         fakeDataSource = FakeDataSource(list, false)
         viewModel =
             RemindersListViewModel(ApplicationProvider.getApplicationContext(), fakeDataSource)
@@ -119,7 +117,7 @@ class RemindersListViewModelTest {
 
             viewModel.loadReminders()
 
-            assertEquals(viewModel.showSnackBar.getOrAwaitValue(), "Error")
+            assertEquals(viewModel.showSnackBar.getOrAwaitValue(), "get reminders failed!")
         }
     }
 
@@ -148,7 +146,7 @@ class RemindersListViewModelTest {
 
             val res = viewModel.showSnackBar.getOrAwaitValue()
 
-            assertEquals(res, "Error")
+            assertEquals(res, "get reminders failed!")
 
         }
     }
@@ -160,17 +158,17 @@ class RemindersListViewModelTest {
             viewModel =
                 RemindersListViewModel(ApplicationProvider.getApplicationContext(), fakeDataSource)
 
-
 //            advanceUntilIdle()
 //            runCurrent()
-            viewModel.loadReminders()
             (coroutineContext[ContinuationInterceptor]!! as DelayController).pauseDispatcher()
-            this.testScheduler.runCurrent()
+            viewModel.loadReminders()
+
+//            this.testScheduler.runCurrent()
 //                advanceUntilIdle()
             assertEquals(viewModel.showLoading.getOrAwaitValue(), true)
             (coroutineContext[ContinuationInterceptor]!! as DelayController).resumeDispatcher()
 //                runCurrent()
-            this.testScheduler.advanceUntilIdle()
+//            this.testScheduler.advanceUntilIdle()
             assertEquals(viewModel.showLoading.getOrAwaitValue(), false)
 
 //                advanceUntilIdle()

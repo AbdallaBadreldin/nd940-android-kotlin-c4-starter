@@ -89,7 +89,7 @@ class SaveReminderViewModelTest {
 
             MatcherAssert.assertThat(
                 fakeDataSource.getReminders(),
-                Matchers.`is`(Result.Error("Error"))
+                Matchers.`is`(Result.Error("get reminders failed!"))
             )
         }
     }

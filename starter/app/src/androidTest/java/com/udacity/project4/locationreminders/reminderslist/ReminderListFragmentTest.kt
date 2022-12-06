@@ -8,7 +8,6 @@ import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
-import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.IdlingRegistry
@@ -22,19 +21,16 @@ import androidx.test.rule.GrantPermissionRule
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
 import com.udacity.project4.R
-import com.udacity.project4.databinding.FragmentRemindersBinding
 import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
-import com.udacity.project4.locationreminders.savereminder.SaveReminderFragment
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
-import com.udacity.project4.util.EspressoIdlingResource
 import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.util.monitorFragment
+import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.Matchers
@@ -45,13 +41,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
+import org.koin.test.AutoCloseKoinTest
 import org.koin.test.KoinTest
-import org.koin.test.get
 import org.mockito.Mockito
 import kotlin.test.assertTrue
 
@@ -60,13 +55,9 @@ import kotlin.test.assertTrue
 @ExperimentalCoroutinesApi
 //UI Testing
 @MediumTest
-class ReminderListFragmentTest : KoinTest {
-
+class ReminderListFragmentTest : AutoCloseKoinTest() {
     private lateinit var context: Application
-
     private val dataBindingIdlingResource = DataBindingIdlingResource()
-
-
     @Before
     fun setupApp() {
         stopKoin()
@@ -85,16 +76,14 @@ class ReminderListFragmentTest : KoinTest {
                     get() as ReminderDataSource
                 )
             }
-            single { RemindersLocalRepository(get()) }
+            single<ReminderDataSource> { RemindersLocalRepository(get()) }
             single { LocalDB.createRemindersDao(context) }
         }
-
         // Declare a new koin module.
         startKoin {
-//            androidContext(InstrumentationRegistry.getInstrumentation().targetContext.applicationContext)
+            androidContext(context)
             modules(listOf(myModule))
         }
-
     }
 
     @Before
@@ -105,10 +94,9 @@ class ReminderListFragmentTest : KoinTest {
         }
     }
 
-
 //    @Rule
 //    @JvmField
-//    var mActivityScenarioRule = ActivityScenarioRule(RemindersActivity::class.java)
+//    var mActivityScenarioRule = FragmentScenario(ReminderListFragment::class.java,ActivityScenarioRule(RemindersActivity::class.java))
 
     @Rule
     @JvmField
@@ -120,50 +108,23 @@ class ReminderListFragmentTest : KoinTest {
         )
 
     @Test
-    fun remindersActivityTest3() {
+    fun test_navigation() {
         val scenario = launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
         dataBindingIdlingResource.monitorFragment(scenario)
 
-
-        val navController = Mockito.mock(NavController::class.java)
-        scenario.onFragment {
-            Navigation.setViewNavController(it.view!!, navController)
-        }
-
         val floatingActionButton = Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.addReminderFAB),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.refreshLayout),
-                        0
-                    ),
-                    3
-                ),
-                isDisplayed()
+                withId(R.id.addReminderFAB)
             )
-        )
         floatingActionButton.perform(ViewActions.click())
 
-
-        val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-
-        device.waitForIdle()
-        assertTrue(device.hasObject(By.text("add title")))
+//        val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
+//        device.waitForIdle()
+//        assertTrue(device.hasObject(By.text("add title")))
 
         val appCompatEditText = Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.reminderTitle),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    0
-                ),
-                isDisplayed()
-            )
+                withId(R.id.reminderTitle)
         )
+
         appCompatEditText.perform(
             ViewActions.replaceText("my reminder"),
             ViewActions.closeSoftKeyboard()
@@ -286,7 +247,6 @@ class ReminderListFragmentTest : KoinTest {
 
     @After
     fun unregisterIdlingResources() {
-        stopKoin()
         IdlingRegistry.getInstance().apply {
             unregister(EspressoIdlingResource.countingIdlingResource)
             unregister(dataBindingIdlingResource)

@@ -2,57 +2,35 @@ package com.udacity.project4.locationreminders.data
 
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.dto.Result
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 //Use FakeDataSource that acts as a test double to the LocalDataSource
 class FakeDataSource(
     private var list: MutableList<ReminderDTO>,
     private var isReturnErrors: Boolean
-) :
-    ReminderDataSource {
+) : ReminderDataSource {
 
-    override suspend fun getReminders(): Result<List<ReminderDTO>> = withContext(Dispatchers.IO) {
-        try {
-            if (!isReturnErrors)
-                return@withContext Result.Success<List<ReminderDTO>>(list)
-            else {
-                return@withContext Result.Error("Error")
-            }
-        } catch (e: Exception) {
-            return@withContext Result.Error(e.localizedMessage)
+    override suspend fun getReminders(): Result<List<ReminderDTO>> {
+        return if (!isReturnErrors)
+            Result.Success<List<ReminderDTO>>(list)
+        else {
+            Result.Error("get reminders failed!")
         }
     }
 
     override suspend fun saveReminder(reminder: ReminderDTO) {
-        withContext(Dispatchers.IO) {
-            try {
-                list.add(reminder)
-            } catch (e: java.lang.Exception) {
-                //  return@withContext Result.Error(e.localizedMessage)
-                //  caught Exception
-            }
-        }
+        list.add(reminder)
     }
 
-    override suspend fun getReminder(id: String): Result<ReminderDTO> =
-        withContext(Dispatchers.IO) {
-            try {
-                if (!isReturnErrors) {
-                    list.first { it.id == id }.let { return@withContext Result.Success(it) }
-                } else
-                    return@withContext Result.Error("Reminder not found!")
-            } catch (e: java.lang.Exception) {
-                return@withContext Result.Error(e.localizedMessage)
-            }
-        }
+    override suspend fun getReminder(id: String): Result<ReminderDTO> {
+        if (!isReturnErrors) {
+            list.firstOrNull { it.id == id }?.let { return Result.Success(it) }
+            return Result.Error("Reminder not found!")
+        } else
+            return Result.Error("get reminder failed!")
+    }
 
     override suspend fun deleteAllReminders() {
-        try {
             list.clear()
-        } catch (e: java.lang.Exception) {
-            //caught something wrong
-        }
     }
 
 
