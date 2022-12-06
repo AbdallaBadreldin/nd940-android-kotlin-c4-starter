@@ -132,97 +132,25 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
 
         Espresso.pressBack()
 
-        val floatingActionButton2 = Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.saveReminder),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    4
-                ),
-                isDisplayed()
-            )
-        )
+        val floatingActionButton2 = Espresso.onView(withId(R.id.saveReminder))
         floatingActionButton2.perform(ViewActions.click())
 
-        val appCompatEditText2 = Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.reminderDescription),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
+        val appCompatEditText2 = Espresso.onView(withId(R.id.reminderDescription))
         appCompatEditText2.perform(ViewActions.click())
 
-        val appCompatEditText3 = Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.reminderDescription),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
+        val appCompatEditText3 = Espresso.onView(withId(R.id.reminderDescription))
         appCompatEditText3.perform(
             ViewActions.replaceText("buy milk"),
             ViewActions.closeSoftKeyboard()
         )
 
-        val appCompatTextView = Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.selectLocation), withText("Reminder Location"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    2
-                ),
-                isDisplayed()
-            )
-        )
+        val appCompatTextView = Espresso.onView(withId(R.id.selectLocation))
         appCompatTextView.perform(ViewActions.click())
 
-        val appCompatButton = Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.map_button), withText("Confirm"),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    1
-                ),
-                isDisplayed()
-            )
-        )
+        val appCompatButton = Espresso.onView(withId(R.id.map_button))
         appCompatButton.perform(ViewActions.click())
 
-        val floatingActionButton3 = Espresso.onView(
-            Matchers.allOf(
-                withId(R.id.saveReminder),
-                childAtPosition(
-                    childAtPosition(
-                        withId(R.id.nav_host_fragment),
-                        0
-                    ),
-                    4
-                ),
-                isDisplayed()
-            )
-        )
+        val floatingActionButton3 = Espresso.onView(withId(R.id.saveReminder))
         floatingActionButton3.perform(ViewActions.click())
     }
 
