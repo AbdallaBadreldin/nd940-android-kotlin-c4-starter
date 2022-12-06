@@ -134,6 +134,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="-618510245">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="R58N319F7BY" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-562246143">
           <value>
             <AndroidTestResultsTableState>
@@ -195,7 +209,9 @@
                 <map>
                   <entry key="Duration" value="90" />
                   <entry key="Nexus_5_API_32" value="120" />
+                  <entry key="R58N319F7BY" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>
@@ -306,6 +322,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="988709820">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="R58N319F7BY" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="1188483497">
           <value>
             <AndroidTestResultsTableState>
@@ -360,6 +390,20 @@
             </AndroidTestResultsTableState>
           </value>
         </entry>
+        <entry key="1669274775">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="R58N319F7BY" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="1868945004">
           <value>
             <AndroidTestResultsTableState>
@@ -385,6 +429,20 @@
                   <entry key="Nexus_5X_API_29" value="120" />
                   <entry key="Nexus_5_API_32" value="120" />
                   <entry key="Tests" value="360" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="2088880092">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="R58N319F7BY" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

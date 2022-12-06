@@ -20,6 +20,7 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
@@ -53,6 +54,7 @@ class SaveReminderFragment : BaseFragment() {
     val BACKGROUND_LOCATION_PERMISSION_INDEX = 75
     val REQUESTCODE_TURNON_GPS = 400
     val LOCATION_SETTING_REQUEST = 452
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -66,6 +68,19 @@ class SaveReminderFragment : BaseFragment() {
         manager = (requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager)
         geofencingClient = LocationServices.getGeofencingClient(requireActivity())
         geofenceList = arrayListOf()
+
+        val args by navArgs<SaveReminderFragmentArgs>()
+        val reminderData = args.reminderDataItem
+       if (reminderData != null){
+           _viewModel.apply {
+               reminderTitle.postValue(reminderData.title)
+               reminderDescription.postValue(reminderData.description)
+               reminderSelectedLocationStr.postValue(reminderData.location)
+               latitude.postValue(reminderData.latitude)
+               longitude.postValue(reminderData.longitude)
+           }
+       }
+
         return binding.root
     }
 

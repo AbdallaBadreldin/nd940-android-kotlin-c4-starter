@@ -11,6 +11,7 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -114,21 +115,13 @@ class RemindersActivityTest : AutoCloseKoinTest() {
         dataBindingIdlingResource.monitorActivity(mActivityScenarioRule.scenario)
         onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
 
-//        val device: UiDevice = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation())
-//        device.waitForIdle()
-//        assertTrue(device.hasObject(By.text("add title")))
+        onView(withId(R.id.saveReminder)).perform(ViewActions.click())
+        onView(withText(context.getString(R.string.add_title))).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
 
         onView(withId(R.id.reminderTitle)).perform(
             ViewActions.replaceText("my reminder"),
             ViewActions.closeSoftKeyboard()
         )
-//        Espresso.closeSoftKeyboard()
-//        Espresso.pressBack()
-        onView(withId(R.id.saveReminder)).perform(ViewActions.click())
-
-//        onView(withText(context.getString(R.string.add_title))).check(m)
-//        onView(withId(R.id.reminderDescription)).
-//        check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
 
         val appCompatEditText3 = Espresso.onView(
             withId(R.id.reminderDescription)

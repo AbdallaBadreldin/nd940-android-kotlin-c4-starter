@@ -61,14 +61,22 @@ class ReminderListFragment : BaseFragment() {
         //use the navigationCommand live data to navigate between the fragments
         _viewModel.navigationCommand.postValue(
             NavigationCommand.To(
-                ReminderListFragmentDirections.toSaveReminder()
+                ReminderListFragmentDirections.toSaveReminder(null)
+            )
+        )
+    }
+    private fun navigateToEditReminder(reminderDataItem: ReminderDataItem) {
+        //use the navigationCommand live data to navigate between the fragments
+        _viewModel.navigationCommand.postValue(
+            NavigationCommand.To(
+                ReminderListFragmentDirections.toEditReminder(reminderDataItem = reminderDataItem)
             )
         )
     }
 
     private fun setupRecyclerView() {
-        val adapter = RemindersListAdapter {
-        }
+        val adapter = RemindersListAdapter {remindDataItem->
+            navigateToEditReminder(remindDataItem) }
 
 //        setup the recycler view using the extension function
         binding.reminderssRecyclerView.setup(adapter)

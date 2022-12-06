@@ -9,9 +9,15 @@
         android:name="com.udacity.project4.locationreminders.reminderslist.ReminderListFragment"
         android:label="ReminderListFragment">
         <action
+            android:id="@+id/to_edit_reminder"
+            app:destination="@id/saveReminderFragment">
+        </action>
+        <action
             android:id="@+id/to_save_reminder"
             app:destination="@id/saveReminderFragment" />
+
     </fragment>
+
     <activity
         android:id="@+id/mainActivity"
         android:name="com.udacity.project4.locationreminders.RemindersActivity"
@@ -20,6 +26,10 @@
         android:id="@+id/saveReminderFragment"
         android:name="com.udacity.project4.locationreminders.savereminder.SaveReminderFragment"
         android:label="Add Reminder">
+        <argument
+            android:name="reminderDataItem"
+            app:argType="com.udacity.project4.locationreminders.reminderslist.ReminderDataItem"
+            app:nullable="true" />
         <action
             android:id="@+id/action_saveReminderFragment_to_reminderListFragment"
             app:destination="@id/reminderListFragment" />
