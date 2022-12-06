@@ -285,7 +285,9 @@
                   <entry key="Duration" value="90" />
                   <entry key="Nexus_5X_API_29" value="120" />
                   <entry key="Nexus_5_API_32" value="120" />
+                  <entry key="R58N319F7BY" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

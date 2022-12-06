@@ -106,9 +106,9 @@ class ReminderListFragmentTest : KoinTest {
     }
 
 
-    @Rule
-    @JvmField
-    var mActivityScenarioRule = ActivityScenarioRule(RemindersActivity::class.java)
+//    @Rule
+//    @JvmField
+//    var mActivityScenarioRule = ActivityScenarioRule(RemindersActivity::class.java)
 
     @Rule
     @JvmField
