@@ -2,12 +2,10 @@ package com.udacity.project4.locationreminders.savereminder
 
 import android.Manifest
 import android.annotation.TargetApi
-import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.net.Uri
@@ -18,17 +16,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.snackbar.Snackbar
 import com.udacity.project4.BuildConfig
 import com.udacity.project4.R
@@ -58,8 +51,8 @@ class SaveReminderFragment : BaseFragment() {
     private val REQUEST_TURN_DEVICE_LOCATION_ON = 451
     private lateinit var tempReminderDataItem: ReminderDataItem
     val BACKGROUND_LOCATION_PERMISSION_INDEX = 75
-    val LOCATION_PERMISSION_INDEX = 21
     val REQUESTCODE_TURNON_GPS = 400
+    val LOCATION_SETTING_REQUEST = 452
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -110,14 +103,10 @@ class SaveReminderFragment : BaseFragment() {
                     title = title, description = description,
                     latitude = latitude, longitude = longitude, location = droppedName
                 )
-                if (checkGpsStatus()) {
-                    if (!foregroundAndBackgroundLocationPermissionApproved()) {
-                        requestForegroundAndBackgroundLocationPermissions()
-                    } else {
-                        addGeofencing(tempReminderDataItem)
-                    }
+                if (foregroundAndBackgroundLocationPermissionApproved()) {
+                    checkDeviceLocationSettingsAndStartGeofence()
                 } else {
-                    turnOnGPS()
+                    requestForegroundAndBackgroundLocationPermissions()
                 }
             }
         }
@@ -134,7 +123,7 @@ class SaveReminderFragment : BaseFragment() {
                     requireContext(),
                     0,
                     intent,
-                    PendingIntent.FLAG_MUTABLE
+                    PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
                 )
             } else {
                 PendingIntent.getBroadcast(
@@ -155,7 +144,7 @@ class SaveReminderFragment : BaseFragment() {
                 tempReminderDataItem.longitude!!,
                 250F
             )
-            .setExpirationDuration(120000)
+            .setExpirationDuration(Geofence.NEVER_EXPIRE)
             .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
             .build()
 
@@ -167,25 +156,17 @@ class SaveReminderFragment : BaseFragment() {
         geofencingClient.addGeofences(geofencingRequest, geofencePendingIntent).run {
             addOnSuccessListener {
                 _viewModel.validateAndSaveReminder(tempReminderDataItem)
-//                findNavController().popBackStack()
-//                val navController = Navigation.findNavController(requireView())
-//                navController.popBackStack()
-                val navController = NavHostFragment.findNavController(this@SaveReminderFragment)
-//                navController.previousBackStackEntry?.savedStateHandle?.set("isDelete", "true/false")
-                navController.popBackStack()
+                _viewModel.navigationCommand.value = NavigationCommand.Back
             }
-            addOnFailureListener {
-                Toast.makeText(
-                    context,
-                    getString(R.string.failed_please_try_again),
-                    Toast.LENGTH_LONG
-                ).show()
-//                val navController = Navigation.findNavController(requireView())
-//                navController.popBackStack()
-            }
+                .addOnFailureListener {
+                    Toast.makeText(
+                        context,
+                        getString(R.string.failed_please_try_again),
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
         }
     }
-
 
     @TargetApi(29)
     private fun foregroundAndBackgroundLocationPermissionApproved(): Boolean {
@@ -199,8 +180,7 @@ class SaveReminderFragment : BaseFragment() {
             if (runningQOrLater) {
                 PackageManager.PERMISSION_GRANTED ==
                         ActivityCompat.checkSelfPermission(
-                            requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                        )
+                            requireContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION)
             } else {
                 true
             }
@@ -220,8 +200,7 @@ class SaveReminderFragment : BaseFragment() {
             else -> REQUEST_FOREGROUND_ONLY_PERMISSIONS_REQUEST_CODE
         }
 //        Log.d(TAG, "Request foreground only location permission")
-        ActivityCompat.requestPermissions(
-            requireActivity(),
+        requestPermissions(
             permissionsArray,
             resultCode
         )
@@ -232,13 +211,11 @@ class SaveReminderFragment : BaseFragment() {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-//        Log.d(TAG, "onRequestPermissionResult")
-
         if (
             grantResults.isEmpty() ||
-            grantResults[LOCATION_PERMISSION_INDEX] == PackageManager.PERMISSION_DENIED ||
+            grantResults[0] == PackageManager.PERMISSION_DENIED ||
             (requestCode == REQUEST_FOREGROUND_AND_BACKGROUND_PERMISSION_RESULT_CODE &&
-                    grantResults[BACKGROUND_LOCATION_PERMISSION_INDEX] ==
+                    grantResults[0] ==
                     PackageManager.PERMISSION_DENIED)
         ) {
             Snackbar.make(
@@ -259,7 +236,7 @@ class SaveReminderFragment : BaseFragment() {
 
     private fun checkDeviceLocationSettingsAndStartGeofence(resolve: Boolean = true) {
         val locationRequest = LocationRequest.create().apply {
-            priority = LocationRequest.PRIORITY_LOW_POWER
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
         val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         val settingsClient = LocationServices.getSettingsClient(requireActivity())
@@ -286,16 +263,8 @@ class SaveReminderFragment : BaseFragment() {
                 }.show()
             }
         }
-        locationSettingsResponseTask.addOnCompleteListener {
-            if (it.isSuccessful) {
-                addGeofencing(tempReminderDataItem)
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.failed_please_try_again),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+        locationSettingsResponseTask.addOnSuccessListener {
+            addGeofencing(tempReminderDataItem)
         }
     }
 
@@ -303,58 +272,7 @@ class SaveReminderFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_TURN_DEVICE_LOCATION_ON) {
             checkDeviceLocationSettingsAndStartGeofence(false)
-        } else
-            if (requestCode === REQUESTCODE_TURNON_GPS) {
-                when (resultCode) {
-                    Activity.RESULT_OK -> {}
-                    Activity.RESULT_CANCELED -> {}
-                    else -> {}
-                }
-            }
-    }
-
-    private fun checkGpsStatus(): Boolean {
-        val locationManager =
-            requireActivity().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    }
-
-    fun goToTurnOnGPS() {
-        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-        startActivity(intent)
-    }
-
-    private fun turnOnGPS() {
-        val locationRequest = LocationRequest.create()
-
-        val builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-
-        val settingsClient = LocationServices.getSettingsClient(requireActivity())
-        val task = settingsClient.checkLocationSettings(builder.build())
-
-        task.addOnSuccessListener(requireActivity(), OnSuccessListener<LocationSettingsResponse?> {
-//            Log.d("GPS_main", "OnSuccess")
-            // GPS is ON
-        })
-
-        task.addOnFailureListener(requireActivity(), OnFailureListener { e ->
-//            Log.d("GPS_main", "GPS off")
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.please_enable_gps),
-                Toast.LENGTH_LONG
-            ).show()
-
-            // GPS off
-            if (e is ResolvableApiException) {
-                val resolvable = e
-                try {
-                    resolvable.startResolutionForResult(requireActivity(), REQUESTCODE_TURNON_GPS)
-                } catch (e1: SendIntentException) {
-                    e1.printStackTrace()
-                }
-            }
-        })
+        }
     }
 
 }

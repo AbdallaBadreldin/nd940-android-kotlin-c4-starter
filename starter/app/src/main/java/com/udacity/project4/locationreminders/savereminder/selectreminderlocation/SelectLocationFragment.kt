@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.udacity.project4.R
 import com.udacity.project4.base.BaseFragment
+import com.udacity.project4.base.NavigationCommand
 import com.udacity.project4.databinding.FragmentSelectLocationBinding
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.utils.setDisplayHomeAsUpEnabled
@@ -178,7 +179,7 @@ class SelectLocationFragment : BaseFragment(), OnMapReadyCallback {
         binding.viewModel?.latitude?.postValue(latLng.latitude)
         binding.viewModel?.longitude?.postValue(latLng.longitude)
         _viewModel.droppedName.postValue(droppedName)
-        findNavController().popBackStack()
+        _viewModel.navigationCommand.value = NavigationCommand.Back
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

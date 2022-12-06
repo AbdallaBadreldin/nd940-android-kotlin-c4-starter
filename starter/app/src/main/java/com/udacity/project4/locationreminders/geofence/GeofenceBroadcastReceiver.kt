@@ -44,8 +44,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             val geofenceTransition = geofencingEvent.geofenceTransition
                 Log.v("GEOFENCE",geofenceTransition.toString())
             // Test that the reported transition was of interest.
-            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ||
-            geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
                 Log.v("GEOFENCE","ENQUED")
                 GeofenceTransitionsJobIntentService.enqueueWork(context,intent)
             }

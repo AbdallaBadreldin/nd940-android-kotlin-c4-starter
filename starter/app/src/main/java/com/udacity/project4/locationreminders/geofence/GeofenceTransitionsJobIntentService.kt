@@ -39,7 +39,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         val geofencingEvent = GeofencingEvent.fromIntent(intent) //getting event
         val list = geofencingEvent?.triggeringGeofences //getting list
         if (geofencingEvent?.hasError() == false) {
-            if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER || geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT)
+            if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER )
                Log.v("GEOFENCE JOB", "enter or exit")
                 if (!geofencingEvent.triggeringGeofences.isNullOrEmpty()) {
                     geofencingEvent.triggeringGeofences?.forEach {

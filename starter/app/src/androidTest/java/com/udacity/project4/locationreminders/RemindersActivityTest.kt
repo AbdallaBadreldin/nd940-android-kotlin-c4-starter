@@ -8,7 +8,7 @@ import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
@@ -42,6 +42,7 @@ import org.koin.core.context.stopKoin
 import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
+import java.util.regex.Pattern.matches
 
 
 @RunWith(AndroidJUnit4::class)
@@ -114,7 +115,9 @@ class RemindersActivityTest : AutoCloseKoinTest() {
 //        Espresso.pressBack()
         onView(withId(R.id.saveReminder)).perform(ViewActions.click())
 
-        onView(withId(R.id.reminderDescription)).perform(ViewActions.click())
+//        onView(withText(context.getString(R.string.add_title))).check(m)
+//        onView(withId(R.id.reminderDescription)).
+//        check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
 
         val appCompatEditText3 = Espresso.onView(
             withId(R.id.reminderDescription)
