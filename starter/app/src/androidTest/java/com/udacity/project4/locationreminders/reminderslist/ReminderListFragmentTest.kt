@@ -4,7 +4,6 @@ import android.app.Application
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -15,29 +14,22 @@ import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
-import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
-import androidx.test.uiautomator.By
-import androidx.test.uiautomator.UiDevice
 import com.udacity.project4.R
-import com.udacity.project4.locationreminders.RemindersActivity
 import com.udacity.project4.locationreminders.data.ReminderDataSource
 import com.udacity.project4.locationreminders.data.dto.ReminderDTO
 import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
-import com.udacity.project4.util.monitorActivity
 import com.udacity.project4.util.monitorFragment
 import com.udacity.project4.utils.EspressoIdlingResource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.Description
 import org.hamcrest.Matcher
-import org.hamcrest.Matchers
 import org.hamcrest.TypeSafeMatcher
 import org.junit.After
 import org.junit.Before
@@ -50,10 +42,8 @@ import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.dsl.module
 import org.koin.test.AutoCloseKoinTest
-import org.koin.test.KoinTest
 import org.koin.test.get
 import org.mockito.Mockito
-import kotlin.test.assertTrue
 
 
 @RunWith(AndroidJUnit4::class)
@@ -64,6 +54,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
     private lateinit var context: Application
     private lateinit var reminderDataSource: ReminderDataSource
     private val dataBindingIdlingResource = DataBindingIdlingResource()
+
     @Before
     fun setupApp() {
         stopKoin()
@@ -140,8 +131,8 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
     @Test
     fun addData_testingNavigation_fromReminderListFragmentToEditReminderFragmentAndBack() {
 //        val data1 = ReminderDataItem("title","desc","location",40.5,145.56)
-        val data1 = ReminderDTO("title","desc","location",40.5,145.56)
-        runBlocking{ reminderDataSource.saveReminder(data1)}
+        val data1 = ReminderDTO("title", "desc", "location", 40.5, 145.56)
+        runBlocking { reminderDataSource.saveReminder(data1) }
 
         val scenario = launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
         dataBindingIdlingResource.monitorFragment(scenario)
@@ -154,7 +145,8 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
             RecyclerViewActions.actionOnItem<RecyclerView.ViewHolder>(
                 hasDescendant(withText(data1.location)),
                 ViewActions.click()
-            ))
+            )
+        )
     }
 
     private fun childAtPosition(
@@ -174,7 +166,7 @@ class ReminderListFragmentTest : AutoCloseKoinTest() {
             }
         }
     }
-    
+
     @After
     fun unregisterIdlingResources() {
         IdlingRegistry.getInstance().apply {

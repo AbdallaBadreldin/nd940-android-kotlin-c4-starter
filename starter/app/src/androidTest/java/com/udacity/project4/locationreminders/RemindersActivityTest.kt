@@ -114,9 +114,13 @@ class RemindersActivityTest : AutoCloseKoinTest() {
     fun openReminderActivityAndAddOneReminder() {
         dataBindingIdlingResource.monitorActivity(mActivityScenarioRule.scenario)
         onView(withId(R.id.addReminderFAB)).perform(ViewActions.click())
-
+        
         onView(withId(R.id.saveReminder)).perform(ViewActions.click())
-        onView(withText(context.getString(R.string.add_title))).check(matches(withEffectiveVisibility(Visibility.VISIBLE)))
+        onView(withText(context.getString(R.string.add_title))).check(
+            matches(
+                withEffectiveVisibility(Visibility.VISIBLE)
+            )
+        )
 
         onView(withId(R.id.reminderTitle)).perform(
             ViewActions.replaceText("my reminder"),
