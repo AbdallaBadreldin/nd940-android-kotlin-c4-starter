@@ -3,6 +3,20 @@
   <component name="AndroidTestResultsUserPreferences">
     <option name="androidTestResultsTableState">
       <map>
+        <entry key="-2081683799">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="R58N319F7BY" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
         <entry key="-1770099288">
           <value>
             <AndroidTestResultsTableState>
@@ -155,7 +169,9 @@
                   <entry key="Duration" value="90" />
                   <entry key="Nexus_5X_API_29" value="120" />
                   <entry key="Nexus_5_API_32" value="120" />
+                  <entry key="R58N319F7BY" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>
@@ -194,6 +210,20 @@
           </value>
         </entry>
         <entry key="620592902">
+          <value>
+            <AndroidTestResultsTableState>
+              <option name="preferredColumnWidths">
+                <map>
+                  <entry key="Duration" value="90" />
+                  <entry key="R58N319F7BY" value="120" />
+                  <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G985F" value="120" />
+                </map>
+              </option>
+            </AndroidTestResultsTableState>
+          </value>
+        </entry>
+        <entry key="1188483497">
           <value>
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
